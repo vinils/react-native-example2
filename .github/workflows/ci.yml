@@ -1,18 +1,42 @@
 name: CI
 on:
+  schedule:
+    # Runs every Monday at midnight UTC
+    - cron: '0 0 * * 1'
+
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+      environment:
+        description: 'Environment to deploy to'
+        type: choice
+        options:
+        - development
+        - staging
+        - production
+
   push:
-    branches:
-      - main
+    paths-ignore:
+      - 'docs/**'
+      - '.gitignore'
+      - '*.md'
+      - 'LICENSE'
   pull_request:
-    branches:
-      - main
+    paths-ignore:
+      - 'docs/**'
+      - '.gitignore'
+      - '*.md'
+      - 'LICENSE'
   merge_group:
     types:
       - checks_requested
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.run_number }}-${{ github.run_attempt }}
+  cancel-in-progress: false
 
 jobs:
   lint:
