@@ -194,17 +194,34 @@ jobs:
         run: |
           yarn example expo prebuild --platform ios
 
-      - name: Build example for iOS
-        run: |
-          yarn turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+#      - name: Build example for iOS
+#        run: |
+#          yarn turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}"
 
-      - name: Upload iOS Artifacts
+      - name: Build example for iOS Simulator
+        run: |
+          cd example/ios
+          xcodebuild \
+            -workspace *.xcworkspace \
+            -scheme example \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+
+      - name: Zip Simulator App Bundle
+        run: |
+          cd example/ios/build/Build/Products/Release-iphonesimulator
+          zip -r example-simulator.app.zip example.app
+
+      - name: Upload iOS Simulator Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-build-outputs
-          path: example/ios/build/
-          if-no-files-found: warn
-
+          name: ios-simulator-build
+          path: example/ios/build/Build/Products/Release-iphonesimulator/example-simulator.app.zip
+          if-no-files-found: error
   build-web:
     runs-on: ubuntu-latest
 
