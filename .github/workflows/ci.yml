@@ -189,11 +189,6 @@ jobs:
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
 
-      - name: Prebuild expo app for iOS
-        if: env.turbo_cache_hit != 1
-        run: |
-          yarn example expo prebuild --platform ios
-
       - name: Bundle React Native JS
         run: |
           npx react-native bundle \
@@ -202,6 +197,11 @@ jobs:
             --entry-file example/index.js \
             --bundle-output ios/main.jsbundle \
             --assets-dest ios/main.jsbundle_assets
+
+      - name: Prebuild expo app for iOS
+        if: env.turbo_cache_hit != 1
+        run: |
+          yarn example expo prebuild --platform ios
 
       - name: Build example for iOS
         run: |
