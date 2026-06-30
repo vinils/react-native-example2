@@ -194,6 +194,17 @@ jobs:
         run: |
           yarn example expo prebuild --platform ios
 
+      - name: Bundle React Native JS
+        run: |
+          cd example
+          npx react-native bundle \
+            --platform ios \
+            --dev false \
+            --entry-file index.js \
+            --bundle-output ios/main.jsbundle \
+            --assets-dest ios/main.jsbundle_assets
+          cd ..
+
 #      - name: Build example for iOS
 #        run: |
 #          yarn turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}"
@@ -208,10 +219,30 @@ jobs:
             -derivedDataPath example/ios/build \
             -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
 
+      - name: Find build output path
+        run: |
+          APP_DIR=$(find . ~/Library/Developer/Xcode/DerivedData -name "*.app" -type d -print -quit 2>/dev/null)
+          echo "IOS_APP_PATH=$APP_DIR" >> $GITHUB_ENV
+
+      - name: Embed bundle into .app (safety copy)
+        run: |
+          APP_DIR="${{ env.IOS_APP_PATH }}"
+       
+          echo "Checking for bundle at $APP_DIR/main.jsbundle"
+          # Copy bundle and asset files into the .app if not already embedded
+          if [ -f example/ios/main.jsbundle ]; then
+            cp example/ios/main.jsbundle "$APP_DIR/" || true
+          fi
+          if [ -d example/ios/main.jsbundle_assets ]; then
+            cp -R example/ios/main.jsbundle_assets/* "$APP_DIR/" || true
+          fi
+          # Verify
+          ls -la "$APP_DIR" | sed -n '1,200p'
+
       - name: Compress Simulator App
         run: |
           mkdir -p build-output
-          cp -R example/ios/build/Build/Products/Release-iphonesimulator/Example2Example.app build-output/
+          cp -R "${{ env.IOS_APP_PATH }}" build-output/
           cd build-output
           zip -r ios-simulator.zip Example2Example.app
 
