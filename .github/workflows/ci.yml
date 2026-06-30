@@ -196,14 +196,12 @@ jobs:
 
       - name: Bundle React Native JS
         run: |
-          cd example
           npx react-native bundle \
             --platform ios \
             --dev false \
-            --entry-file index.js \
+            --entry-file example/index.js \
             --bundle-output ios/main.jsbundle \
             --assets-dest ios/main.jsbundle_assets
-          cd ..
 
       - name: Build example for iOS
         run: |
