@@ -163,10 +163,38 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-
-      - name: Setup
-        uses: ./.github/actions/setup
-
+  
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+  
+      - name: Restore dependencies
+        id: yarn-cache
+        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: |
+            **/node_modules
+            .yarn/install-state.gz
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('**/package.json', '!node_modules/**') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+            ${{ runner.os }}-yarn-
+  
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+        shell: bash
+  
+      - name: Cache dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: |
+            **/node_modules
+            .yarn/install-state.gz
+          key: ${{ steps.yarn-cache.outputs.cache-primary-key }}
+        
       - name: Cache turborepo for iOS
         uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
@@ -188,15 +216,6 @@ jobs:
         uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
-
-      - name: Bundle React Native JS
-        run: |
-          npx react-native bundle \
-            --platform ios \
-            --dev false \
-            --entry-file example/index.js \
-            --bundle-output ios/main.jsbundle \
-            --assets-dest ios/main.jsbundle_assets
 
       - name: Prebuild expo app for iOS
         if: env.turbo_cache_hit != 1
@@ -226,21 +245,6 @@ jobs:
         run: |
           APP_DIR=$(find . ~/Library/Developer/Xcode/DerivedData -name "*.app" -type d -print -quit 2>/dev/null)
           echo "IOS_APP_PATH=$APP_DIR" >> $GITHUB_ENV
-
-      - name: Embed bundle into .app (safety copy)
-        run: |
-          APP_DIR="${{ env.IOS_APP_PATH }}"
-       
-          echo "Checking for bundle at $APP_DIR/main.jsbundle"
-          # Copy bundle and asset files into the .app if not already embedded
-          if [ -f example/ios/main.jsbundle ]; then
-            cp example/ios/main.jsbundle "$APP_DIR/" || true
-          fi
-          if [ -d example/ios/main.jsbundle_assets ]; then
-            cp -R example/ios/main.jsbundle_assets/* "$APP_DIR/" || true
-          fi
-          # Verify
-          ls -la "$APP_DIR" | sed -n '1,200p'
 
       - name: Compress Simulator App
         run: |
