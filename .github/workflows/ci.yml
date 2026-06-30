@@ -211,9 +211,9 @@ jobs:
       - name: Compress Simulator App
         run: |
           mkdir -p build-output
-          cp -R example/ios/build/Build/Products/Release-iphonesimulator/Example3Example.app build-output/
+          cp -R example/ios/build/Build/Products/Release-iphonesimulator/Example2Example.app build-output/
           cd build-output
-          zip -r ios-simulator.zip Example3Example.app
+          zip -r ios-simulator.zip Example2Example.app
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
