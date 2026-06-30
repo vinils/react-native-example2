@@ -205,19 +205,24 @@ jobs:
             --assets-dest ios/main.jsbundle_assets
           cd ..
 
-#      - name: Build example for iOS
-#        run: |
-#          yarn turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}"
-
-      - name: Build example for iOS Simulator
+      - name: Build example for iOS
         run: |
-          xcodebuild \
-            -workspace example/ios/Example2Example.xcworkspace \
-            -scheme Example2Example \
-            -configuration Release \
-            -sdk iphonesimulator \
-            -derivedDataPath example/ios/build \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
+          yarn turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+#          yarn turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}" -- -- \
+#          "--configuration" "Release" \
+#          "-sdk" "iphonesimulator" \
+#          "-derivedDataPath" "example/ios/build" \
+#          "-destination" "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5"
+
+#      - name: Build example for iOS Simulator
+#        run: |
+#          xcodebuild \
+#            -workspace example/ios/Example2Example.xcworkspace \
+#            -scheme Example2Example \
+#            -configuration Release \
+#            -sdk iphonesimulator \
+#            -derivedDataPath example/ios/build \
+#            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
 
       - name: Find build output path
         run: |
