@@ -200,28 +200,27 @@ jobs:
 
       - name: Build example for iOS Simulator
         run: |
-          cd example/ios
           xcodebuild \
-            -workspace *.xcworkspace \
-            -scheme example \
+            -workspace example/ios/Example2Example.xcworkspace \
+            -scheme Example2Example \
             -configuration Release \
             -sdk iphonesimulator \
-            -derivedDataPath build \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY=""
+            -derivedDataPath example/ios/build \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
 
-      - name: Zip Simulator App Bundle
+      - name: Compress Simulator App
         run: |
-          cd example/ios/build/Build/Products/Release-iphonesimulator
-          zip -r example-simulator.app.zip example.app
+          mkdir -p build-output
+          cp -R example/ios/build/Build/Products/Release-iphonesimulator/Example3Example.app build-output/
+          cd build-output
+          zip -r ios-simulator.zip Example3Example.app
 
-      - name: Upload iOS Simulator Artifact
+      - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ios-simulator-build
-          path: example/ios/build/Build/Products/Release-iphonesimulator/example-simulator.app.zip
-          if-no-files-found: error
+          name: ios-simulator-app
+          path: build-output/ios-simulator.zip
+          
   build-web:
     runs-on: ubuntu-latest
 
