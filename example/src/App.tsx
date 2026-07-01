@@ -13,7 +13,6 @@ export default function App() {
     <View style={styles.container}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <AppContent />
-      <Example2View color="#32a852" style={styles.box} />
     </View>
   );
 }
@@ -22,6 +21,7 @@ function AppContent() {
   return (
     <View style={styles2.container}>
       <Text>Result: </Text>
+      <Example2View color="#32a852" style={styles.box} />
     </View>
   );
 }
