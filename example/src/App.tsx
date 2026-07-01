@@ -1,4 +1,10 @@
-import { StatusBar, StyleSheet, useColorScheme, View, Text } from 'react-native';
+import {
+  StatusBar,
+  StyleSheet,
+  useColorScheme,
+  View,
+  Text,
+} from 'react-native';
 import { Example2View } from 'react-native-example2';
 
 export default function App() {
