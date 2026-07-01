@@ -239,7 +239,7 @@ jobs:
             -configuration Release \
             -sdk iphonesimulator \
             -derivedDataPath example/ios/build \
-            -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5'
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.2'
 
       - name: Find build output path
         run: |
