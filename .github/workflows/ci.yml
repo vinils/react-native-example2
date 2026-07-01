@@ -152,7 +152,7 @@ jobs:
           if-no-files-found: warn
 
   build-ios:
-    runs-on: macos-latest
+    runs-on: macos-15
 
     env:
       XCODE_VERSION: 26
@@ -239,7 +239,7 @@ jobs:
             -configuration Release \
             -sdk iphonesimulator \
             -derivedDataPath example/ios/build \
-            -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.2'
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
 
       - name: Find build output path
         run: |
